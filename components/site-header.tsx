@@ -53,8 +53,8 @@ export function SiteHeader() {
         <div className="flex h-14 items-center justify-between px-6 liquid-glass-header rounded-full">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-1.5">
-            <Image src="/icons/skitbit-white.svg" alt="Skitbit logo" width={20} height={20} className="h-5 w-5" />
-            <span className="font-semibold tracking-wide text-white">Skitbit</span>
+            <Image src="/icons/kyndl.png" alt="Kyndl logo" width={100} height={24} className="h-6 w-auto" />
+            <span className="sr-only">Kyndl</span>
           </Link>
 
           {/* Desktop Nav with Services Dropdown */}
@@ -133,8 +133,8 @@ export function SiteHeader() {
               <SheetContent side="right" className="liquid-glass border-gray-800 p-0 w-64 flex flex-col">
                 {/* Brand Header */}
                 <div className="flex items-center gap-1.5 px-4 py-4 border-b border-gray-800">
-                  <Image src="/icons/skitbit-white.svg" alt="Skitbit logo" width={24} height={24} className="h-6 w-6" />
-                  <span className="font-semibold tracking-wide text-white text-lg">Skitbit</span>
+                  <Image src="/icons/kyndl.png" alt="Kyndl logo" width={120} height={28} className="h-7 w-auto" />
+                  <span className="sr-only">Kyndl</span>
                 </div>
 
                 {/* Nav Links */}

@@ -83,7 +83,7 @@ export default function RootLayout({
       <body>
         <Suspense fallback={null}>
           <div className="fixed inset-0 z-0 bg-black">
-            <Plasma color="#8b5cf6" speed={0.8} direction="forward" scale={1.5} opacity={0.4} mouseInteractive={true} />
+            <Plasma color="#ff364d" speed={0.8} direction="forward" scale={1.5} opacity={0.4} mouseInteractive={true} />
           </div>
           <div className="relative z-10">{children}</div>
         </Suspense>

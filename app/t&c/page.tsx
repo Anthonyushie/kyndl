@@ -22,10 +22,10 @@ export default function TermsPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="relative overflow-hidden rounded-3xl border border-neutral-800 bg-[#0f0f0f] p-6 sm:p-10 shadow-xl">
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(163,230,53,0.10),transparent_55%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(255,54,77,0.10),transparent_55%)]" />
               <div className="relative space-y-12">
                 <header className="space-y-4">
-                  <h1 className="text-4xl font-bold tracking-tight text-lime-300">Terms and Conditions</h1>
+                  <h1 className="text-4xl font-bold tracking-tight text-[#ff364d]">Terms and Conditions</h1>
                   <p className="text-neutral-400 text-lg">
                     Welcome to Skitbit. By accessing our website, you agree to these terms and conditions. Please read
                     them carefully.
@@ -74,7 +74,7 @@ export default function TermsPage() {
                     these Terms or in connection with our website or services. The perceived quality, style, or
                     suitability of content created by us remains subjective and cannot be used as grounds to increase
                     scope of work. Revisions are strictly governed by our{" "}
-                    <Link href="/revisions" className="text-lime-300 underline">
+                    <Link href="/revisions" className="text-[#ff364d] underline">
                       revision policy
                     </Link>
                     .
@@ -94,7 +94,7 @@ export default function TermsPage() {
                   <p className="text-neutral-300">If you have any questions about these Terms, please contact us at:</p>
                   <p className="text-neutral-300">
                     Email:{" "}
-                    <a href="mailto:hello@theskitbit.com" className="text-lime-300 underline">
+                    <a href="mailto:hello@theskitbit.com" className="text-[#ff364d] underline">
                       hello@theskitbit.com
                     </a>
                   </p>

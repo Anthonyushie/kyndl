@@ -13,6 +13,19 @@ const config: Config = {
   theme: {
   	extend: {
   		colors: {
+  			lime: {
+  				50: '#ff364d',
+  				100: '#ff364d',
+  				200: '#ff364d',
+  				300: '#ff364d',
+  				400: '#ff364d',
+  				500: '#ff364d',
+  				600: '#ff364d',
+  				700: '#ff364d',
+  				800: '#ff364d',
+  				900: '#ff364d',
+  				950: '#ff364d',
+  			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

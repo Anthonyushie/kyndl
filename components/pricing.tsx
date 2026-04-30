@@ -9,7 +9,7 @@ import { ExamplesDialog } from "./examples-dialog"
 
 type Feature = { text: string; muted?: boolean }
 
-const ACCENT = "#C6FF3A"
+const ACCENT = "#ff364d"
 
 function FeatureItem({ text, muted = false }: Feature) {
   return (
@@ -108,22 +108,21 @@ export function Pricing() {
             className="mx-auto mb-4 inline-flex items-center rounded-full px-3 py-1 text-xs font-medium text-white"
             style={{ backgroundColor: "rgba(0, 0, 0, 0.6)", border: `1px solid ${ACCENT}` }}
           >
-            Our Pricing and Packages
+            <span className="font-mono uppercase tracking-[0.2em]">How it works</span>
           </div>
           <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl" itemProp="name">
-            Our Pricing.
+            3 Simple Steps.
           </h2>
           <p className="mx-auto mt-2 max-w-xl text-sm text-neutral-300" itemProp="description">
-            No hidden fees. Just world-class animation that fits your budget.
+            Launch your affiliate program or start earning commissions in seconds, not months.
           </p>
           <div className="mt-6">
             <Button
               asChild
-              className="rounded-full px-5 text-neutral-900 hover:brightness-95"
-              style={{ backgroundColor: "#f2f2f2" }}
+              variant="primary"
             >
-              <Link href="https://wa.link/rc25na" target="_blank">
-                Contact now
+              <Link href="#launch" target="_blank">
+                Get Started
               </Link>
             </Button>
           </div>
@@ -143,38 +142,25 @@ export function Pricing() {
               {PRICES[currency].save}
             </div>
             <CardHeader className="space-y-3 pb-4">
-              <div className="text-sm font-semibold text-neutral-100" itemProp="name">
-                Startup
+              <div className="font-mono text-sm font-semibold uppercase tracking-[0.18em] text-neutral-100" itemProp="name">
+                01 Create
               </div>
               <div className="flex items-end gap-2 text-white">
                 <div className="text-xl font-bold tracking-tight" itemProp="price">
-                  {PRICES[currency].startup}
+                  List your product
                 </div>
-                <span className="pb-0.5 text-[11px] text-neutral-300">per video</span>
-                <meta itemProp="priceCurrency" content={currency} />
               </div>
               <Button
                 type="button"
-                onClick={() => setOpenPlan("Startup")}
-                onTouchStart={() => setOpenPlan("Startup")}
                 className="w-full rounded-full px-4 py-2 text-sm font-medium transition-colors"
                 style={{ backgroundColor: "#0a0a0a", color: "#ffffff", border: "1px solid #333" }}
               >
-                View Example
+                Create Program
               </Button>
             </CardHeader>
             <CardContent className="pt-0">
               <ul className="grid gap-2" itemProp="description">
-                {[
-                  "10–15s Reel/Teaser (1 SKU)",
-                  "Simple background + lighting",
-                  "1 revision",
-                  "Delivered in 10 days",
-                  "Social reel/ad-ready visuals",
-                  "3D Modelling - Included",
-                ].map((f, i) => (
-                  <FeatureItem key={i} text={f} />
-                ))}
+                <FeatureItem text="List your product, set your price in MUSD and your commission rate. One transaction. Done." />
               </ul>
             </CardContent>
             <CardFooter />
@@ -187,38 +173,25 @@ export function Pricing() {
             itemType="https://schema.org/Offer"
           >
             <CardHeader className="space-y-3 pb-4">
-              <div className="text-sm font-semibold text-neutral-100" itemProp="name">
-                Pro
+              <div className="font-mono text-sm font-semibold uppercase tracking-[0.18em] text-neutral-100" itemProp="name">
+                02 Share
               </div>
               <div className="flex items-end gap-2 text-white">
                 <div className="text-xl font-bold tracking-tight" itemProp="price">
-                  {PRICES[currency].pro}
+                  Generate Link
                 </div>
-                <span className="pb-0.5 text-[11px] text-neutral-300">per video</span>
-                <meta itemProp="priceCurrency" content={currency} />
               </div>
               <Button
                 type="button"
-                onClick={() => setOpenPlan("Pro")}
-                onTouchStart={() => setOpenPlan("Pro")}
                 className="w-full rounded-full px-4 py-2 text-sm font-medium transition-colors"
                 style={{ backgroundColor: "#0a0a0a", color: "#ffffff", border: "1px solid #333" }}
               >
-                View Example
+                Get Link
               </Button>
             </CardHeader>
             <CardContent className="pt-0">
               <ul className="grid gap-2" itemProp="description">
-                {[
-                  "20–25s Animation (1 SKU)",
-                  "Fixed Shot-list (no surprises)",
-                  "Creative background + pro graphics",
-                  "2 structured revisions",
-                  "Delivered in 3 weeks",
-                  "3D Modelling - Included",
-                ].map((f, i) => (
-                  <FeatureItem key={i} text={f} />
-                ))}
+                <FeatureItem text="Any Mezo Passport wallet generates a unique referral link instantly. No sign-up. No approval." />
               </ul>
             </CardContent>
             <CardFooter />
@@ -231,41 +204,30 @@ export function Pricing() {
             itemType="https://schema.org/Offer"
           >
             <CardHeader className="relative space-y-3 pb-4">
-              <div className="text-sm font-semibold text-neutral-100" itemProp="name">
-                Premium
+              <div className="font-mono text-sm font-semibold uppercase tracking-[0.18em] text-neutral-100" itemProp="name">
+                03 Get Paid
               </div>
               <div className="flex items-end gap-2 text-white">
                 <div className="text-xl font-bold tracking-tight" itemProp="price">
-                  {PRICES[currency].premium}
+                  Instant Settlement
                 </div>
-                <span className="pb-0.5 text-[11px] text-neutral-300">per video</span>
-                <meta itemProp="priceCurrency" content={currency} />
               </div>
               <Button
                 type="button"
-                onClick={() => setOpenPlan("Premium")}
-                onTouchStart={() => setOpenPlan("Premium")}
                 className="w-full rounded-full px-4 py-2 text-sm font-medium transition-colors"
                 style={{ backgroundColor: "#0a0a0a", color: "#ffffff", border: "1px solid #333" }}
               >
-                View Example
+                View Earnings
               </Button>
             </CardHeader>
             <CardContent className="relative pt-0">
               <ul className="grid gap-2" itemProp="description">
-                {[
-                  "30–40s Animation (up to 5 SKUs)",
-                  "Advanced storyboard + shot design",
-                  "Delivered in 4 week",
-                  "Lighting, Camera Animation, Depth effects",
-                  "Up to 3 structured revisions",
-                  "3D Modelling - Included",
-                ].map((f, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4" style={{ color: ACCENT }} />
-                    <span className="text-sm text-neutral-100">{f}</span>
-                  </li>
-                ))}
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4" style={{ color: ACCENT }} />
+                  <span className="text-sm text-neutral-100">
+                    Buyer purchases. Smart contract splits MUSD in the same transaction. Both parties paid instantly.
+                  </span>
+                </li>
               </ul>
             </CardContent>
             <CardFooter />

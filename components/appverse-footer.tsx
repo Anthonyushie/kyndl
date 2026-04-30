@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Instagram, Twitter, Youtube, MessageCircle } from "lucide-react"
+import { Twitter, Github } from "lucide-react"
 import LazyVideo from "./lazy-video"
 import Image from "next/image"
 
@@ -14,8 +14,8 @@ interface FooterContent {
 }
 
 const defaultContent: FooterContent = {
-  tagline: "Experience 3D animation like never before. We craft cinematic visuals for brands and products.",
-  copyright: "© 2025 — Skitbit International Uk",
+  tagline: "Kyndl is built natively on Mezo — the Bitcoin banking layer. Payments settle in MUSD, Mezo's Bitcoin-backed stablecoin. Affiliate identity verified by Mezo Passport. No bridges. No foreign tokens. Pure Bitcoin-native commerce.",
+  copyright: "Kyndl · Built on Mezo · Powered by MUSD · @Kyndlxyz",
 }
 
 export function AppverseFooter() {
@@ -43,11 +43,11 @@ export function AppverseFooter() {
         <div className="flex justify-center">
           <Button
             asChild
-            className="rounded-full bg-lime-400 px-6 py-2 text-sm font-medium text-black shadow-[0_0_20px_rgba(163,230,53,0.35)] hover:bg-lime-300"
+            variant="primary"
           >
-            <a href="https://wa.link/rc25na" target="_blank" rel="noopener noreferrer">
-              Contact us
-            </a>
+            <Link href="#launch">
+              Get Started
+            </Link>
           </Button>
         </div>
       </div>
@@ -58,14 +58,18 @@ export function AppverseFooter() {
           <div className="relative grid items-center gap-8 md:grid-cols-2">
             {/* Left copy */}
             <div>
-              <p className="mb-2 text-[11px] tracking-widest text-lime-300">STREAMLINE YOUR LAUNCHES</p>
+              <p className="font-mono mb-2 text-[11px] tracking-widest text-[#ff364d]">GROWTH ENGINE</p>
               <h3 className="text-2xl font-bold leading-tight text-white sm:text-3xl">
-                Preview &amp; approve high-end 3D visuals from anywhere
+                Your audience is your distribution.
               </h3>
               <p className="mt-2 max-w-prose text-sm text-neutral-400">
-                Review renders, leave timestamped comments, and approve scenes from anywhere. Using our revision &amp;
-                collaboration tools
+                Launch your affiliate program in one transaction.
               </p>
+              <div className="mt-6">
+                <Button asChild variant="primary">
+                  <Link href="#launch">Get Started</Link>
+                </Button>
+              </div>
             </div>
 
             {/* Right mockup */}
@@ -86,9 +90,9 @@ export function AppverseFooter() {
                   <div className="relative p-3">
                     <div className="mx-auto mb-3 h-1.5 w-16 rounded-full bg-white/20" />
                     <div className="space-y-1 px-1">
-                      <div className="text-5xl font-extrabold text-lime-300">Approvals Made Easy</div>
-                      <p className="text-xs text-white/80">From feedback to approval in a single flow</p>
-                      <div className="mt-3 inline-flex items-center rounded-full bg-black/40 px-2 py-0.5 text-[10px] uppercase tracking-wider text-lime-300">
+                      <div className="text-5xl font-extrabold text-[#ff364d]">Agentic-Ready</div>
+                      <p className="text-xs text-white/80">Built for a permissionless future</p>
+                      <div className="font-mono mt-3 inline-flex items-center rounded-full bg-black/40 px-2 py-0.5 text-[10px] uppercase tracking-wider text-[#ff364d]">
                         Zero Hassle
                       </div>
                     </div>
@@ -107,7 +111,7 @@ export function AppverseFooter() {
             {/* Brand */}
             <div className="space-y-3">
               <div className="flex items-center gap-1.5">
-                <Image src="/icons/kyndl.png" alt="Kyndl logo" width={120} height={28} className="h-7 w-auto" />
+                <Image src="/images/kyndl_logo.png" alt="Kyndl logo" width={120} height={28} className="h-7 w-auto" />
                 <span className="sr-only">Kyndl</span>
               </div>
               <p className="max-w-sm text-sm text-neutral-400">{content.tagline}</p>
@@ -116,11 +120,11 @@ export function AppverseFooter() {
             {/* Navigation */}
             <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-2">
               <div>
-                <h5 className="mb-2 text-xs font-semibold uppercase tracking-widest text-neutral-400">Navigation</h5>
+                <h5 className="font-mono mb-2 text-xs font-semibold uppercase tracking-widest text-neutral-400">Navigation</h5>
                 <ul className="space-y-2 text-sm text-neutral-300">
                   {["Home", "Features", "Testimonials", "Pricing", "Blog", "Download"].map((item) => (
                     <li key={item}>
-                      <Link href={`#${item.toLowerCase()}`} className="hover:text-lime-300">
+                      <Link href={`#${item.toLowerCase()}`} className="hover:text-[#ff364d]">
                         {item}
                       </Link>
                     </li>
@@ -128,7 +132,7 @@ export function AppverseFooter() {
                 </ul>
               </div>
               <div>
-                <h5 className="mb-2 text-xs font-semibold uppercase tracking-widest text-neutral-400">Social media</h5>
+                <h5 className="font-mono mb-2 text-xs font-semibold uppercase tracking-widest text-neutral-400">Social media</h5>
                 <ul className="space-y-2 text-sm text-neutral-300">
                   <li className="flex items-center gap-2">
                     <Twitter className="h-4 w-4 text-neutral-400" />
@@ -136,46 +140,10 @@ export function AppverseFooter() {
                       href="https://twitter.com/theskitbit"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-lime-300"
+                      className="hover:text-[#ff364d]"
                       aria-label="Follow skitbit on Twitter"
                     >
                       X/Twitter
-                    </a>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Youtube className="h-4 w-4 text-neutral-400" />
-                    <a
-                      href="https://www.youtube.com/@skitbitinternational"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-lime-300"
-                      aria-label="Subscribe to skitbit on YouTube"
-                    >
-                      YouTube
-                    </a>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Instagram className="h-4 w-4 text-neutral-400" />
-                    <a
-                      href="https://instagram.com/theskitbit"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-lime-300"
-                      aria-label="Follow skitbit on Instagram"
-                    >
-                      Instagram
-                    </a>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <MessageCircle className="h-4 w-4 text-neutral-400" />
-                    <a
-                      href="https://threads.com/theskitbit"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-lime-300"
-                      aria-label="Follow skitbit on Threads"
-                    >
-                      Threads
                     </a>
                   </li>
                 </ul>
@@ -187,10 +155,20 @@ export function AppverseFooter() {
           <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs text-neutral-500 sm:flex-row">
             <p>{content.copyright}</p>
             <div className="flex items-center gap-6">
-              <Link href="/revisions" className="hover:text-lime-300">
+              <a
+                href="https://github.com/kyndlxyz"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:text-[#ff364d]"
+                aria-label="View Kyndl on GitHub"
+              >
+                <Github className="h-4 w-4" />
+                GitHub
+              </a>
+              <Link href="/revisions" className="hover:text-[#ff364d]">
                 Revision Policy
               </Link>
-              <Link href="/t&c" className="hover:text-lime-300">
+              <Link href="/t&c" className="hover:text-[#ff364d]">
                 Terms & Conditions
               </Link>
             </div>

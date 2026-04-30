@@ -11,8 +11,8 @@ interface FeaturesContent {
 }
 
 const defaultContent: FeaturesContent = {
-  title: "What makes us the best studio for you.",
-  subtitle: "Discover our unique approach to 3D animation",
+  title: "A powerful network for both sides.",
+  subtitle: "Everything you need to scale.",
 }
 
 export function Features() {
@@ -43,68 +43,44 @@ export function Features() {
         {/* Adaptability Card - Hidden on mobile */}
         <Card className="hidden md:block liquid-glass border border-white/20">
           <CardHeader>
-            <p className="text-[11px] tracking-widest text-white/80">ADAPTABILITY</p>
-            <CardTitle className="mt-1 text-xl text-white">Make the experience truly intuitive</CardTitle>
+            <p className="font-mono text-[11px] tracking-widest text-[#ff364d]">FOR CREATORS</p>
+            <CardTitle className="mt-1 text-xl text-white">Deploy an affiliate program in one contract call</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="relative aspect-[3/4] overflow-hidden rounded-xl border border-white/10">
-                <Image
-                  src="/images/intuitive-1.png"
-                  alt="Close-up smartphone camera module on textured leather back"
-                  fill
-                  className="object-cover"
-                  sizes="(min-width: 768px) 240px, 45vw"
-                  priority={false}
-                />
-              </div>
-              <div className="relative aspect-[3/4] overflow-hidden rounded-xl border border-white/10">
-                <Image
-                  src="/images/intuitive-2.png"
-                  alt="Hand gripping textured phone back — macro detail"
-                  fill
-                  className="object-cover"
-                  sizes="(min-width: 768px) 240px, 45vw"
-                  priority={false}
-                />
-              </div>
-            </div>
+            <ul className="grid gap-3 text-sm text-neutral-300 mt-2">
+              <li className="flex items-start gap-2">
+                <span className="text-[#ff364d]">•</span> Set your own commission rate
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#ff364d]">•</span> Never manage payouts manually
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#ff364d]">•</span> Full analytics dashboard
+              </li>
+            </ul>
           </CardContent>
         </Card>
 
         {/* Client Love Card - Always visible */}
         <Card className="liquid-glass border border-white/20">
           <CardHeader>
-            <p className="text-[11px] tracking-widest text-white/80">CLIENT LOVE</p>
+            <p className="font-mono text-[11px] tracking-widest text-[#ff364d]">FOR AFFILIATES</p>
             <CardTitle className="mt-1 text-xl text-white">
-              Their work didn't just look good, it moved the needle — our audience felt the difference instantly.
+              Generate a referral link from any wallet
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="mb-6 flex items-end gap-4">
-              <div className="text-5xl font-bold text-lime-300">4.9</div>
-              <div className="flex items-center gap-1">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-5 w-5 fill-lime-300 text-lime-300" />
-                ))}
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <Image
-                src={"/images/top-rated-1.png"}
-                width={280}
-                height={160}
-                alt="Product sketch concepts of backpack on paper"
-                className="h-full w-full rounded-xl border border-white/10 object-cover"
-              />
-              <Image
-                src={"/images/top-rated-2.png"}
-                width={280}
-                height={160}
-                alt="Backpacks on stage with Smartpack PRO lighting"
-                className="h-full w-full rounded-xl border border-white/10 object-cover"
-              />
-            </div>
+            <ul className="grid gap-3 text-sm text-neutral-300 mt-2">
+              <li className="flex items-start gap-2">
+                <span className="text-[#ff364d]">•</span> Earn MUSD commissions instantly
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#ff364d]">•</span> Reputation grows via Mezo Passport
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#ff364d]">•</span> No minimum payout threshold
+              </li>
+            </ul>
           </CardContent>
         </Card>
       </div>

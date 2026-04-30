@@ -11,7 +11,7 @@ export default function FAQPage() {
             <div className="relative overflow-hidden rounded-3xl liquid-glass p-6 sm:p-10 shadow-xl">
               <div className="relative space-y-12">
                 <header className="space-y-4">
-                  <h1 className="text-4xl font-bold tracking-tight text-lime-300">Frequently Asked Questions</h1>
+                  <h1 className="text-4xl font-bold tracking-tight text-[#ff364d]">Frequently Asked Questions</h1>
                   <p className="text-neutral-400 text-lg">
                     Answers to common questions we get from brands about 3D animation and rendering for products.
                   </p>
@@ -51,7 +51,7 @@ export default function FAQPage() {
                   <p className="text-neutral-300">
                     Pricing is based on animation length, complexity, number of renders, and modeling requirements. You
                     can view our detailed pricing on our{" "}
-                    <a href="/pricing" className="text-lime-300 underline">
+                    <a href="/pricing" className="text-[#ff364d] underline">
                       pricing page
                     </a>
                     .
@@ -62,7 +62,7 @@ export default function FAQPage() {
                   <h2 className="text-2xl font-semibold text-white">5. Can we request changes after delivery?</h2>
                   <p className="text-neutral-300">
                     Yes. All revisions are covered under our{" "}
-                    <a href="/revisions" className="text-lime-300 underline">
+                    <a href="/revisions" className="text-[#ff364d] underline">
                       revision policy
                     </a>
                     , which ensures smooth updates without unexpected scope creep.
@@ -111,7 +111,7 @@ export default function FAQPage() {
                   <h2 className="text-2xl font-semibold text-white">10. How do we get started?</h2>
                   <p className="text-neutral-300">
                     Simply{" "}
-                    <a href="/contact" className="text-lime-300 underline">
+                    <a href="/contact" className="text-[#ff364d] underline">
                       contact us
                     </a>{" "}
                     with your project details, references, and timeline. We’ll provide a proposal and next steps.

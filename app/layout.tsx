@@ -1,21 +1,40 @@
 import type React from "react"
 import "./globals.css"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { JetBrains_Mono, Manrope, Space_Grotesk } from "next/font/google"
 import Script from "next/script"
 import Plasma from "@/components/plasma"
 import { Suspense } from "react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/react"
+import { Providers } from "@/components/providers"
 
-const inter = Inter({ subsets: ["latin"], display: "swap" })
+const bodyFont = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-body",
+})
+
+const displayFont = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-display",
+})
+
+const monoFont = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-mono-custom",
+})
 
 export const metadata: Metadata = {
-  title: "Skitbit | 3D Animation Made Simple, Reliable & Scalable",
+  title: "Kyndl | Permissionless affiliate payouts. Onchain. Instant.",
   description:
-    "From product launches to full-scale campaigns, Skitbit delivers 3D animation that's fast, consistent, and built to wow your audience.",
+    "Launch your affiliate program in seconds. Every commission settled in MUSD instantly.",
   generator: "v0.app",
 }
+
+import { Toaster } from "@/components/ui/toaster"
 
 export default function RootLayout({
   children,
@@ -23,22 +42,16 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.className}>
+    <html lang="en" className={`${bodyFont.variable} ${displayFont.variable} ${monoFont.variable}`}>
       <head>
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
         />
-
-        {/* Font Preload */}
-        <link
-          rel="preload"
-          href="/fonts/Inter.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-          fetchPriority="high"
-        />
+        
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light+Two&display=swap" rel="stylesheet" />
 
         {/* Dynamic Favicon Script */}
         <Script id="dynamic-favicon" strategy="beforeInteractive">
@@ -80,17 +93,20 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body>
+      <body className={bodyFont.className}>
         <Suspense fallback={null}>
           <div className="fixed inset-0 z-0 bg-black">
             <Plasma color="#ff364d" speed={0.8} direction="forward" scale={1.5} opacity={0.4} mouseInteractive={true} />
           </div>
-          <div className="relative z-10">{children}</div>
+          <div className="relative z-10">
+            <Providers>{children}</Providers>
+          </div>
         </Suspense>
 
         {/* Vercel Speed Insights and Analytics components */}
         <SpeedInsights />
         <Analytics />
+        <Toaster />
       </body>
     </html>
   )

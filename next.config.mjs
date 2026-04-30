@@ -9,6 +9,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  transpilePackages: ["@mezo-org/passport", "@mezo-org/orangekit"],
 }
 
 export default nextConfig

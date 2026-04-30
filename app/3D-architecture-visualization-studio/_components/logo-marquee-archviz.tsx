@@ -45,8 +45,10 @@ export function LogoMarqueeArchviz() {
           <h2 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl text-center sm:text-left">
             Trusted by <span className="text-lime-300">property teams</span>
           </h2>
-          <Button variant="outline" className="mt-4 sm:mt-0 liquid-glass text-white border-white/20 bg-transparent">
-            Learn More
+          <Button asChild variant="ghost" className="mt-4 sm:mt-0">
+            <a href="https://instagram.com/theskitbit" target="_blank" rel="noopener noreferrer">
+              View Our Portfolio
+            </a>
           </Button>
         </div>
         <div className="relative">

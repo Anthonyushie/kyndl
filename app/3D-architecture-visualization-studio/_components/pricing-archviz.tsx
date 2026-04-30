@@ -97,8 +97,7 @@ export function PricingArchviz() {
           <div className="mt-6">
             <Button
               asChild
-              className="rounded-full px-5 text-neutral-900 hover:brightness-95"
-              style={{ backgroundColor: "#f2f2f2" }}
+              variant="primary"
             >
               <Link href="https://wa.link/65mf3i" target="_blank">
                 Get a Custom Quote
@@ -123,8 +122,8 @@ export function PricingArchviz() {
                 <span className="pb-0.5 text-[11px] text-neutral-300">{PRICES[currency].unitLabel}</span>
               </div>
               <Button
-                className="w-full rounded-full px-4 py-2 text-sm font-medium transition-colors"
-                style={{ backgroundColor: "#0a0a0a", color: "#ffffff", border: "1px solid #333" }}
+                variant="ghost"
+                className="w-full"
               >
                 View Examples
               </Button>
@@ -167,8 +166,8 @@ export function PricingArchviz() {
                 <span className="pb-0.5 text-[11px] text-neutral-300">{PRICES[currency].unitLabel}</span>
               </div>
               <Button
-                className="w-full rounded-full px-4 py-2 text-sm font-medium transition-colors"
-                style={{ backgroundColor: "#0a0a0a", color: "#ffffff", border: "1px solid #333" }}
+                variant="ghost"
+                className="w-full"
               >
                 View Examples
               </Button>
@@ -201,8 +200,8 @@ export function PricingArchviz() {
                 <span className="pb-0.5 text-[11px] text-neutral-300">per 30–40s</span>
               </div>
               <Button
-                className="w-full rounded-full px-4 py-2 text-sm font-medium transition-colors"
-                style={{ backgroundColor: "#0a0a0a", color: "#ffffff", border: "1px solid #333" }}
+                variant="ghost"
+                className="w-full"
               >
                 View Examples
               </Button>

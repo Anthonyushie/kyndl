@@ -76,6 +76,17 @@
 }
 
 @theme inline {
+  --color-lime-50: #ff364d;
+  --color-lime-100: #ff364d;
+  --color-lime-200: #ff364d;
+  --color-lime-300: #ff364d;
+  --color-lime-400: #ff364d;
+  --color-lime-500: #ff364d;
+  --color-lime-600: #ff364d;
+  --color-lime-700: #ff364d;
+  --color-lime-800: #ff364d;
+  --color-lime-900: #ff364d;
+  --color-lime-950: #ff364d;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -128,6 +139,8 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-body), system-ui, sans-serif;
+    letter-spacing: -0.01em;
     height: 100%;
     min-height: 100vh;
     min-height: 100dvh;
@@ -157,6 +170,30 @@
     background: #000000;
     min-height: 100vh;
     min-height: 100dvh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display), system-ui, sans-serif;
+    letter-spacing: -0.04em;
+  }
+
+  button,
+  [data-slot="button"] {
+    font-family: var(--font-display), system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  .font-mono {
+    font-family: var(--font-mono-custom), ui-monospace, monospace !important;
+  }
+
+  .font-display {
+    font-family: var(--font-display), system-ui, sans-serif;
   }
 }
 

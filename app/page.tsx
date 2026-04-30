@@ -1,7 +1,10 @@
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 import { SiteHeader } from "@/components/site-header"
 import { Hero } from "@/components/hero"
 import { Features } from "@/components/features"
 import { LogoMarquee } from "@/components/logo-marquee"
+import { SettlementShowcase } from "@/components/settlement-showcase"
 import { Pricing } from "@/components/pricing"
 import { AppverseFooter } from "@/components/appverse-footer"
 import Script from "next/script"
@@ -14,58 +17,27 @@ export default function Page() {
   const pricingStructuredData = {
     "@context": "https://schema.org",
     "@type": "WebPageElement",
-    "@id": "https://theskitbit.com/#pricing",
-    name: "Pricing Plans",
-    description: "3D Animation pricing plans - Startup, Pro, and Premium packages for all business needs",
-    url: "https://theskitbit.com/#pricing",
-    mainEntity: {
-      "@type": "PriceSpecification",
-      name: "3D Animation Services",
-      description: "Professional 3D animation services with three pricing tiers",
-      offers: [
-        {
-          "@type": "Offer",
-          name: "Startup Plan",
-          price: "299",
-          priceCurrency: "USD",
-          description: "Up to 15s 3D Animation with 2 revisions",
-        },
-        {
-          "@type": "Offer",
-          name: "Pro Plan",
-          price: "699",
-          priceCurrency: "USD",
-          description: "Up to 25s 3D Animation with 4 revisions",
-        },
-        {
-          "@type": "Offer",
-          name: "Premium Plan",
-          price: "2049",
-          priceCurrency: "USD",
-          description: "40-60s 3D Animation with unlimited revisions",
-        },
-      ],
-    },
+    "@id": "https://kyndl.xyz/#launch",
+    name: "Launch Affiliate Program",
+    description: "Launch your affiliate program in seconds",
+    url: "https://kyndl.xyz/#launch",
   }
 
   // Structured data for main page
   const pageStructuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "@id": "https://theskitbit.com/",
-    name: "Skitbit | 3D Animation Made Simple, Reliable & Scalable",
+    "@id": "https://kyndl.xyz/",
+    name: "Kyndl | Permissionless affiliate payouts. Onchain. Instant.",
     description:
-      "From product launches to full-scale campaigns, Skitbit delivers 3D animation that’s fast, consistent, and built to wow your audience.",
-    url: "https://theskitbit.com/",
+      "Any creator. Any wallet. Every commission settled in MUSD the moment a sale happens. No delays. No middlemen. No approval gates.",
+    url: "https://kyndl.xyz/",
     mainEntity: {
       "@type": "Organization",
-      name: "Skitbit",
-      url: "https://theskitbit.com",
+      name: "Kyndl",
+      url: "https://kyndl.xyz",
       sameAs: [
-        "https://twitter.com/theskitbit",
-        "https://www.youtube.com/@skitbitinternational",
-        "https://instagram.com/theskitbit",
-        "https://threads.com/theskitbit",
+        "https://twitter.com/kyndlxyz",
       ],
     },
     hasPart: [
@@ -81,10 +53,17 @@ export default function Page() {
   return (
     <>
       <main className="min-h-[100dvh] text-white">
+        <div className="bg-[#0a0a0a] border-b border-white/10 text-center py-3 flex items-center justify-center gap-4">
+          <span className="text-white/80 text-sm font-medium hidden sm:inline-block">Now live on Mezo Testnet</span>
+          <Button asChild variant="accent">
+            <Link href="#demo">Try the demo →</Link>
+          </Button>
+        </div>
         <SiteHeader />
         <Hero />
         <Features />
         <LogoMarquee />
+        <SettlementShowcase />
         <Pricing />
         <AppverseFooter />
       </main>

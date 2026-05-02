@@ -1,6 +1,6 @@
 "use client"
 
-import { useAccount } from "wagmi"
+import { useAccount, usePublicClient, useWriteContract } from "wagmi"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Image from "next/image"
@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Copy, Link as LinkIcon, Trophy } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { decodeEventLog, formatUnits, isAddress, parseUnits, type Address } from "viem"
+import { KYNDL_REGISTRY_ADDRESS, kyndlRegistryAbi } from "@/lib/contracts/kyndl"
 
 type Campaign = {
   id: string
@@ -89,6 +91,11 @@ export default function DashboardPage() {
   const [price, setPrice] = useState("")
   const [commission, setCommission] = useState([20])
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [chainCampaigns, setChainCampaigns] = useState<Campaign[]>([])
+  const [isDeploying, setIsDeploying] = useState(false)
+  const publicClient = usePublicClient()
+  const { writeContractAsync } = useWriteContract()
+  const isRegistryConfigured = isAddress(KYNDL_REGISTRY_ADDRESS)
 
   // Passport gate — redirect if not connected
   useEffect(() => {
@@ -101,20 +108,92 @@ export default function DashboardPage() {
     return null
   }
 
-  const handleDeployCampaign = () => {
-    console.log("Deploying Campaign:", {
-      productName,
-      price: Number(price),
-      commissionPercent: commission[0]
-    })
-    setIsModalOpen(false)
-    setProductName("")
-    setPrice("")
-    setCommission([20])
+  const handleDeployCampaign = async () => {
+    if (!isRegistryConfigured) {
+      toast({
+        title: "Registry not configured",
+        description: "Set NEXT_PUBLIC_KYNDL_REGISTRY_ADDRESS after deploying KyndlRegistry.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!publicClient || !productName.trim() || !price || Number(price) <= 0) {
+      toast({
+        title: "Missing campaign details",
+        description: "Enter a product name and MUSD price before deploying.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      setIsDeploying(true)
+      const priceInMusd = parseUnits(price, 18)
+      const affiliateBps = commission[0] * 100
+      const hash = await writeContractAsync({
+        address: KYNDL_REGISTRY_ADDRESS,
+        abi: kyndlRegistryAbi,
+        functionName: "createCampaign",
+        args: [productName.trim(), "", priceInMusd, affiliateBps],
+      })
+
+      const receipt = await publicClient.waitForTransactionReceipt({ hash })
+      const createdLog = receipt.logs
+        .map((log: any) => {
+          try {
+            return decodeEventLog({
+              abi: kyndlRegistryAbi,
+              data: log.data,
+              topics: log.topics,
+            })
+          } catch {
+            return null
+          }
+        })
+        .find((log: { eventName?: string } | null) => log?.eventName === "CampaignCreated")
+
+      const campaignAddress = createdLog?.args.campaign as Address | undefined
+      if (campaignAddress) {
+        const origin = typeof window !== "undefined" ? window.location.origin : "https://kyndl.xyz"
+        setChainCampaigns((prev) => [
+          {
+            id: campaignAddress,
+            name: productName.trim(),
+            priceMusd: Number(formatUnits(priceInMusd, 18)),
+            commissionPercent: commission[0],
+            totalSales: 0,
+            totalVolumeMusd: 0,
+            topAffiliate: "None yet",
+            campaignUrl: `${origin}/buy/${campaignAddress}`,
+            createdAt: new Date().toISOString(),
+          },
+          ...prev,
+        ])
+      }
+
+      toast({
+        title: "Campaign deployed",
+        description: campaignAddress ? `${campaignAddress.slice(0, 6)}...${campaignAddress.slice(-4)}` : "Transaction confirmed.",
+      })
+      setIsModalOpen(false)
+      setProductName("")
+      setPrice("")
+      setCommission([20])
+    } catch (error) {
+      toast({
+        title: "Deployment failed",
+        description: error instanceof Error ? error.message : "The transaction did not complete.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsDeploying(false)
+    }
   }
 
   const handleCopyLink = (campaignId: string) => {
-    const link = `https://kyndl.xyz/buy/${campaignId}?ref=${address || "0x0"}`
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://kyndl.xyz"
+    const link = `${origin}/buy/${campaignId}?ref=${address || "0x0"}`
     navigator.clipboard.writeText(link)
     toast({
       title: "Copied!",
@@ -123,8 +202,9 @@ export default function DashboardPage() {
   }
 
   // Summary Metrics
-  const totalSalesVolume = MOCK_CAMPAIGNS.reduce((acc, camp) => acc + camp.totalVolumeMusd, 0)
-  const totalEarned = MOCK_CAMPAIGNS.reduce((acc, camp) => acc + (camp.totalVolumeMusd * (1 - camp.commissionPercent / 100)), 0)
+  const creatorCampaigns = [...chainCampaigns, ...MOCK_CAMPAIGNS]
+  const totalSalesVolume = creatorCampaigns.reduce((acc, camp) => acc + camp.totalVolumeMusd, 0)
+  const totalEarned = creatorCampaigns.reduce((acc, camp) => acc + (camp.totalVolumeMusd * (1 - camp.commissionPercent / 100)), 0)
   const totalAffiliates = 12 // Mock
 
   // Affiliate Metrics
@@ -207,8 +287,8 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button variant="primary" onClick={handleDeployCampaign} className="w-full">
-                    Deploy Campaign
+                  <Button variant="primary" onClick={handleDeployCampaign} className="w-full" disabled={isDeploying}>
+                    {isDeploying ? "Deploying..." : "Deploy Campaign"}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -225,7 +305,7 @@ export default function DashboardPage() {
               </div>
               <div className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-md">
                 <p className="text-sm text-white/60 mb-2 uppercase tracking-wider">Active Campaigns</p>
-                <p className="text-3xl font-bold text-white">{MOCK_CAMPAIGNS.length}</p>
+                <p className="text-3xl font-bold text-white">{creatorCampaigns.length}</p>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-md">
                 <p className="text-sm text-white/60 mb-2 uppercase tracking-wider">Total Affiliates</p>
@@ -237,7 +317,7 @@ export default function DashboardPage() {
             <div>
               <h2 className="text-xl font-bold text-white mb-6">Your Campaigns</h2>
               <div className="grid gap-4">
-                {MOCK_CAMPAIGNS.map((campaign) => (
+                {creatorCampaigns.map((campaign) => (
                   <div key={campaign.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-6 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-colors gap-6">
                     
                     <div className="flex-1 space-y-1">

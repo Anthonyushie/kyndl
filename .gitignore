@@ -26,3 +26,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# hardhat
+/artifacts/
+/cache/
+/ignition/deployments/
+/deployments/*.local.json
+/types/ethers-contracts/

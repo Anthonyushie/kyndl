@@ -8,37 +8,12 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, ArrowRight, ShieldCheck, HeartHandshake } from "lucide-react"
-import { formatUnits, isAddress, parseUnits, zeroAddress, type Address, type Hash } from "viem"
+import { formatUnits, isAddress, zeroAddress, type Address, type Hash } from "viem"
 import { erc20Abi, kyndlCampaignAbi, MUSD_ADDRESS } from "@/lib/contracts/kyndl"
 import { useToast } from "@/hooks/use-toast"
+import { supabase } from "@/lib/supabase"
 
-// Mock database for campaign lookup
-const MOCK_CAMPAIGN_DB: Record<string, { name: string; priceMusd: number; commissionPercent: number; description: string }> = {
-  "camp_1": {
-    name: "Premium Content Access",
-    priceMusd: 50,
-    commissionPercent: 20,
-    description: "Get lifetime access to exclusive premium content, tutorials, and private community channels."
-  },
-  "camp_2": {
-    name: "Bitcoin Mastery Course",
-    priceMusd: 200,
-    commissionPercent: 15,
-    description: "A comprehensive deep dive into Bitcoin, Lightning Network, and building decentralized applications."
-  },
-  "camp_3": {
-    name: "Web3 Developer Bootcamp",
-    priceMusd: 300,
-    commissionPercent: 25,
-    description: "From zero to hero in Web3 development. Learn Solidity, React, and smart contract security."
-  },
-  "camp_4": {
-    name: "DeFi Yield Strategies Guide",
-    priceMusd: 75,
-    commissionPercent: 40,
-    description: "Advanced yield farming strategies across multiple chains. Maximize your returns safely."
-  }
-}
+
 
 function BuyPageContent() {
   const params = useParams()
@@ -58,6 +33,8 @@ function BuyPageContent() {
   const [isPurchased, setIsPurchased] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [purchaseHash, setPurchaseHash] = useState<Hash | null>(null)
+  const [supaDescription, setSupaDescription] = useState<string | null>(null)
+  const [supaCoverUrl, setSupaCoverUrl] = useState<string | null>(null)
 
   const { data: campaignReads, isLoading: isCampaignLoading } = useReadContracts({
     contracts: campaignAddress
@@ -79,13 +56,27 @@ function BuyPageContent() {
           priceRaw: campaignReads[1].result as bigint,
           commissionPercent: Number(campaignReads[2].result as bigint | number) / 100,
           description:
-            ((campaignReads[3].result as string) || "This campaign settles creator and affiliate payouts instantly on Mezo Testnet."),
+            supaDescription || (campaignReads[3].result as string) || "This campaign settles creator and affiliate payouts instantly on Mezo Testnet.",
         }
       : null
 
-  const mockCampaign = MOCK_CAMPAIGN_DB[campaignId]
-  const campaign = chainCampaign ?? mockCampaign
-  const priceRaw = chainCampaign?.priceRaw ?? (mockCampaign ? parseUnits(String(mockCampaign.priceMusd), 18) : BigInt(0))
+  const campaign = chainCampaign
+  const priceRaw = chainCampaign?.priceRaw ?? BigInt(0)
+
+  // Fetch Supabase metadata enrichment
+  useEffect(() => {
+    if (!campaignAddress) return
+    supabase
+      .from("campaign_metadata")
+      .select("description, cover_url")
+      .eq("campaign_address", campaignAddress)
+      .single()
+      .then(({ data }) => {
+        if (data?.description) setSupaDescription(data.description)
+        if (data?.cover_url) setSupaCoverUrl(data.cover_url)
+      })
+      .catch(() => {})
+  }, [campaignAddress])
 
   // Handle Affiliate Ref persistence
   useEffect(() => {
@@ -135,38 +126,31 @@ function BuyPageContent() {
     setIsProcessing(true)
 
     try {
-      if (campaignAddress && chainCampaign) {
-        if (!publicClient) throw new Error("Wallet client is not ready yet.")
-        if (affiliateAddress && !isAddress(affiliateAddress)) {
-          throw new Error("The referral address in the URL is not a valid wallet address.")
-        }
-
-        const affiliate = affiliateAddress && isAddress(affiliateAddress) ? (affiliateAddress as Address) : zeroAddress
-        const approvalHash = await writeContractAsync({
-          address: MUSD_ADDRESS,
-          abi: erc20Abi,
-          functionName: "approve",
-          args: [campaignAddress, priceRaw],
-        })
-        await publicClient.waitForTransactionReceipt({ hash: approvalHash })
-
-        const txHash = await writeContractAsync({
-          address: campaignAddress,
-          abi: kyndlCampaignAbi,
-          functionName: "purchase",
-          args: [affiliate],
-        })
-        await publicClient.waitForTransactionReceipt({ hash: txHash })
-        setPurchaseHash(txHash)
-      } else {
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        console.log("Mock Contract Call -> Executing Purchase:", {
-          campaignId,
-          buyer: address,
-          affiliate: affiliateAddress || "No Affiliate",
-          priceMusd: campaign.priceMusd
-        })
+      if (!campaignAddress || !chainCampaign) {
+        throw new Error("Invalid campaign — cannot purchase.")
       }
+      if (!publicClient) throw new Error("Wallet client is not ready yet.")
+      if (affiliateAddress && !isAddress(affiliateAddress)) {
+        throw new Error("The referral address in the URL is not a valid wallet address.")
+      }
+
+      const affiliate = affiliateAddress && isAddress(affiliateAddress) ? (affiliateAddress as Address) : zeroAddress
+      const approvalHash = await writeContractAsync({
+        address: MUSD_ADDRESS,
+        abi: erc20Abi,
+        functionName: "approve",
+        args: [campaignAddress, priceRaw],
+      })
+      await publicClient.waitForTransactionReceipt({ hash: approvalHash })
+
+      const txHash = await writeContractAsync({
+        address: campaignAddress,
+        abi: kyndlCampaignAbi,
+        functionName: "purchase",
+        args: [affiliate],
+      })
+      await publicClient.waitForTransactionReceipt({ hash: txHash })
+      setPurchaseHash(txHash)
 
       setIsPurchased(true)
     } catch (error) {
@@ -229,6 +213,11 @@ function BuyPageContent() {
           
           {/* Product Details Left Side */}
           <div className="space-y-6">
+            {supaCoverUrl && (
+              <div className="overflow-hidden rounded-2xl border border-white/10">
+                <img src={supaCoverUrl} alt={campaign.name} className="h-52 w-full object-cover" />
+              </div>
+            )}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff364d]/10 border border-[#ff364d]/20 text-[#ff364d] text-xs font-semibold uppercase tracking-wider">
               Kyndl Secure Checkout
             </div>

@@ -36,6 +36,8 @@ export const metadata: Metadata = {
 
 import { Toaster } from "@/components/ui/toaster"
 
+import MobileBlocker from "@/components/mobile-blocker"
+
 export default function RootLayout({
   children,
 }: {
@@ -100,6 +102,7 @@ export default function RootLayout({
         ) : null}
       </head>
       <body className={bodyFont.className}>
+        <MobileBlocker />
         <Suspense fallback={null}>
           <div className="fixed inset-0 z-0 bg-black">
             <Plasma color="#ff364d" speed={0.8} direction="forward" scale={1.5} opacity={0.4} mouseInteractive={true} />

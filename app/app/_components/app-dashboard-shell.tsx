@@ -11,6 +11,7 @@ import {
   CircleDollarSign,
   Home,
   Library,
+  Lock,
   LifeBuoy,
   LogOut,
   Menu,
@@ -104,9 +105,16 @@ export function AppDashboardShell({ children }: { children: ReactNode }) {
     return address.slice(2, 4).toUpperCase()
   }, [address])
 
+  // Routes accessible without wallet connection
+  const publicRoutes = ["/app", "/app/campaigns"]
+  const isPublicRoute = publicRoutes.some(
+    (route) => pathname === route || (route !== "/app" && pathname.startsWith(`${route}/`))
+  )
+  const requiresWallet = !isPublicRoute && isHydrated && !hasWalletSession
+
   return (
     <main className="min-h-screen overflow-hidden bg-[#07030d] text-white">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,54,77,0.24),transparent_26%),radial-gradient(circle_at_bottom_left,rgba(145,102,255,0.16),transparent_30%),linear-gradient(135deg,#07030d_0%,#100414_45%,#050308_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,54,77,0.24),transparent_26%),radial-gradient(circle_at_bottom_left,rgba(255,54,77,0.1),transparent_30%),linear-gradient(135deg,#07030d_0%,#100408_45%,#050308_100%)]" />
 
       <div className="relative flex min-h-screen">
         <aside
@@ -178,7 +186,7 @@ export function AppDashboardShell({ children }: { children: ReactNode }) {
             {hasWalletSession ? (
               <>
                 {!sidebarCollapsed ? (
-                  <div className="group overflow-hidden rounded-[20px] border border-white/10 bg-[linear-gradient(145deg,rgba(149,95,255,0.95),rgba(255,89,116,0.92))]">
+                  <div className="group overflow-hidden rounded-[20px] border border-white/10 bg-[linear-gradient(145deg,rgba(255,54,77,0.95),rgba(255,107,122,0.92))]">
                     <div className="relative p-4">
                       <div className="absolute right-0 top-0 h-14 w-14 translate-x-3 -translate-y-3 rounded-full bg-[#ffba59] opacity-0 transition duration-300 group-hover:translate-x-2 group-hover:-translate-y-2 group-hover:opacity-100" />
                       <div className="relative">
@@ -186,7 +194,7 @@ export function AppDashboardShell({ children }: { children: ReactNode }) {
                           Launch a campaign
                         </div>
                         <div className="mt-1 text-base font-semibold text-white/90">Route referrals in minutes</div>
-                        <Button asChild className="mt-4 h-10 w-full rounded-full bg-white text-sm text-[#8f56ff] hover:bg-white/90">
+                        <Button asChild className="mt-4 h-10 w-full rounded-full bg-white text-sm text-[#ff364d] hover:bg-white/90">
                           <Link href="/app/create-campaign">Open builder</Link>
                         </Button>
                       </div>
@@ -201,14 +209,14 @@ export function AppDashboardShell({ children }: { children: ReactNode }) {
                       onClick={() => setSidebarCollapsed(false)}
                       className="flex w-full items-center justify-center py-2 text-white/75 transition hover:text-white"
                     >
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#7f55ff,#ff4d7a)] font-mono text-xs font-semibold text-white">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#ff364d,#ff6b7a)] font-mono text-xs font-semibold text-white">
                         {walletInitials}
                       </div>
                       <span className="sr-only">Open sidebar profile</span>
                     </button>
                   ) : (
                     <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#7f55ff,#ff4d7a)] font-mono text-xs font-semibold text-white">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#ff364d,#ff6b7a)] font-mono text-xs font-semibold text-white">
                         {walletInitials}
                       </div>
                       <div className="min-w-0 flex-1">
@@ -324,7 +332,7 @@ export function AppDashboardShell({ children }: { children: ReactNode }) {
 
                     {hasWalletSession ? (
                       <div className="space-y-4">
-                        <div className="overflow-hidden rounded-[22px] border border-white/10 bg-[linear-gradient(145deg,rgba(149,95,255,0.95),rgba(255,89,116,0.92))]">
+                          <div className="group overflow-hidden rounded-[22px] border border-white/10 bg-[linear-gradient(145deg,rgba(255,54,77,0.95),rgba(255,107,122,0.92))]">
                           <div className="relative p-5">
                             <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[#ffba59]" />
                             <div className="relative">
@@ -332,7 +340,7 @@ export function AppDashboardShell({ children }: { children: ReactNode }) {
                                 Launch a campaign
                               </div>
                               <div className="mt-1 text-lg font-semibold text-white/90">Start routing today</div>
-                              <Button asChild className="mt-5 h-11 w-full rounded-full bg-white text-[#8f56ff] hover:bg-white/90">
+                              <Button asChild className="mt-5 h-11 w-full rounded-full bg-white text-[#ff364d] hover:bg-white/90">
                                 <Link href="/app/create-campaign">Open builder</Link>
                               </Button>
                             </div>
@@ -341,7 +349,7 @@ export function AppDashboardShell({ children }: { children: ReactNode }) {
 
                         <div className="rounded-[22px] border border-white/10 bg-white/[0.03] px-3 py-3">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#7f55ff,#ff4d7a)] font-mono text-xs font-semibold text-white">
+                            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#ff364d,#ff6b7a)] font-mono text-xs font-semibold text-white">
                               {walletInitials}
                             </div>
                             <div className="min-w-0 flex-1">
@@ -395,7 +403,28 @@ export function AppDashboardShell({ children }: { children: ReactNode }) {
           </header>
 
           <div className="px-4 pb-10 sm:px-6 lg:px-10 lg:pb-16">
-            {children}
+            {requiresWallet ? (
+              <div className="flex min-h-[520px] items-center justify-center">
+                <div className="mx-auto max-w-md text-center">
+                  <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-[rgba(255,54,77,0.08)]">
+                    <Lock className="h-8 w-8 text-[#ff364d]" />
+                  </div>
+                  <h2 className="mt-6 text-3xl font-extrabold tracking-tight text-white">
+                    Connect to continue
+                  </h2>
+                  <p className="mt-3 text-sm leading-7 text-white/55">
+                    This page requires a wallet connection. Connect your wallet to access campaign creation, library management, and affiliate tools.
+                  </p>
+                  <Button
+                    variant="accent"
+                    className="mt-8 px-8 py-6 text-base"
+                    onClick={() => openConnectModal?.()}
+                  >
+                    Connect Wallet
+                  </Button>
+                </div>
+              </div>
+            ) : children}
           </div>
         </section>
       </div>

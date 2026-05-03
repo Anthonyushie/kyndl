@@ -1,4 +1,7 @@
-# Kyndl — Permissionless Affiliate Payouts on Mezo
+<img width="395" height="144" alt="kyndl_logo" src="https://github.com/user-attachments/assets/3d2c9bd0-32f5-4b5b-a7fe-763a86d0785c" />
+
+
+# Kyndl — Onchain Affiliate Stablecoin Payouts for Digital creators on Mezo
 
 > Any creator. Any wallet. Every commission settled in MUSD the moment a sale happens.
 

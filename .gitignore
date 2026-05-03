@@ -33,3 +33,5 @@ next-env.d.ts
 /ignition/deployments/
 /deployments/*.local.json
 /types/ethers-contracts/
+next-dev.out.log
+next-dev.err.log

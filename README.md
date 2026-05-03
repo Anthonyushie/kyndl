@@ -313,7 +313,7 @@ Kyndl is built to grow beyond the hackathon:
 
 ## License
 
-MIT
+[MIT](./LICENSE)
 
 ---
 

@@ -71,22 +71,19 @@ There is no intermediate token, no wrapping, and no conversion step. MUSD flows 
 ┌──────────────────────────────────────────────────────┐
 │                    Frontend (Next.js)                 │
 │                                                      │
-│  Landing Page ─── Dashboard ─── Buy Page (Checkout)  │
-│       │               │               │              │
-│       │          ┌────┴────┐     ┌────┴────┐         │
-│       │          │ Creator │     │  Buyer  │         │
-│       │          │  Tab    │     │  Flow   │         │
-│       │          ├─────────┤     ├─────────┤         │
-│       │          │Affiliate│     │ MUSD    │         │
-│       │          │  Tab    │     │ Approve │         │
-│       │          └────┬────┘     │ + Buy   │         │
-│       │               │         └────┬────┘         │
-└───────┼───────────────┼──────────────┼──────────────┘
-        │               │              │
-   Wallet Connect   createCampaign()  purchase()
-   (RainbowKit)         │              │
-        │               ▼              ▼
-┌───────┴──────────────────────────────────────────────┐
+│  Landing ── Campaign Builder ── Campaigns ── Buy     │
+│    │         /app/create-       /app/        /buy/   │
+│    │         campaign          campaigns    [addr]   │
+│    │              │                │           │     │
+│    │         Deploy form      Browse all    Checkout │
+│    │         + cover upload   campaigns     + pay    │
+└────┼──────────────┼────────────────┼───────────┼─────┘
+     │              │                │           │
+ Wallet         createCampaign()  getCampaigns() purchase()
+ Connect        + Supabase insert + Supabase     + MUSD
+ (RainbowKit)       │             merge           approve
+     │              ▼                ▼           │
+┌────┴─────────────────────────────────────────────────┐
 │              Mezo Testnet (Chain ID: 31611)           │
 │                                                      │
 │  ┌─────────────────┐    ┌─────────────────────────┐  │
@@ -101,6 +98,17 @@ There is no intermediate token, no wrapping, and no conversion step. MUSD flows 
 │  ┌──────────┐                                        │
 │  │   MUSD   │  (ERC-20, used for all payments)       │
 │  └──────────┘                                        │
+└──────────────────────────────────────────────────────┘
+                         │
+┌────────────────────────┴─────────────────────────────┐
+│                 Supabase (Off-chain)                  │
+│                                                      │
+│  ┌─────────────────────┐  ┌───────────────────────┐  │
+│  │  campaign_metadata  │  │  campaign-covers      │  │
+│  │  (descriptions,     │  │  (Storage bucket for  │  │
+│  │   categories, slugs,│  │   cover images)       │  │
+│  │   cover URLs)       │  │                       │  │
+│  └─────────────────────┘  └───────────────────────┘  │
 └──────────────────────────────────────────────────────┘
 ```
 
@@ -138,22 +146,21 @@ Each product gets its own contract, deployed automatically through the registry.
 
 ### Creator Flow
 1. Connect wallet on the landing page
-2. Open the Dashboard → **Creator** tab
-3. Click "Create Campaign" → enter product name, MUSD price, and commission %
-4. Confirm the transaction — a new KyndlCampaign contract is deployed
-5. Copy the campaign URL and share it with affiliates
-6. Track sales, volume, and top affiliates from the dashboard
+2. Navigate to **Campaign Builder** (`/app/create-campaign`)
+3. Upload a cover image, enter campaign name, MUSD price, description, and set commission %
+4. Click "Review campaign" → confirm the transaction in your wallet
+5. The campaign deploys on-chain, metadata + cover image are stored in Supabase
+6. Browse your campaigns at `/app/campaigns` and share checkout links with affiliates
 
 ### Affiliate Flow
 1. Connect wallet on the landing page
-2. Open the Dashboard → **Affiliate** tab
-3. Browse available campaigns and click "Get My Link"
-4. Share the referral link (contains your wallet address as `?ref=0x...`)
-5. When someone buys through your link, MUSD commission lands in your wallet instantly
-6. Build reputation over time — tier badges (Bronze → Silver → Gold) based on cumulative volume
+2. Browse available campaigns at `/app/campaigns`
+3. Copy the checkout URL and append your wallet as `?ref=0x...`
+4. Share the referral link — when someone buys, MUSD commission lands in your wallet instantly
+5. Build reputation over time — tier badges (Bronze → Silver → Gold) based on cumulative volume
 
 ### Buyer Flow
-1. Click an affiliate's referral link → lands on the checkout page
+1. Click an affiliate's referral link → lands on the checkout page (`/buy/[address]`)
 2. The referral address is automatically captured from the URL
 3. Connect wallet and click "Buy Now"
 4. Approve MUSD spending → confirm purchase transaction
@@ -169,6 +176,7 @@ Each product gets its own contract, deployed automatically through the registry.
 | Frontend | Next.js 16, React 19, TypeScript |
 | Styling | Tailwind CSS 4 |
 | Wallet | RainbowKit, wagmi v3, viem |
+| Backend | Supabase (metadata DB + image storage) |
 | Smart Contracts | Solidity 0.8.28, OpenZeppelin 5.x |
 | Tooling | Hardhat 3 |
 | Network | Mezo Testnet (Chain ID: 31611) |
@@ -206,9 +214,39 @@ NEXT_PUBLIC_WC_PROJECT_ID=your_walletconnect_project_id
 # Pre-deployed contract addresses (already set in .env.example)
 NEXT_PUBLIC_MUSD_ADDRESS=0x118917a40FAF1CD7a13dB0Ef56C86De7973Ac503
 NEXT_PUBLIC_KYNDL_REGISTRY_ADDRESS=0x331721D9Cf63c40A7d429c15A4018066584E8e38
+
+# Supabase (for campaign metadata + cover images)
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-### 3. Run the dev server
+### 3. Set up Supabase
+
+Create a free project at [supabase.com](https://supabase.com), then:
+
+1. Go to **SQL Editor** and run:
+
+```sql
+CREATE TABLE campaign_metadata (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  campaign_address TEXT NOT NULL UNIQUE,
+  creator_address TEXT NOT NULL,
+  description TEXT,
+  category TEXT,
+  slug TEXT,
+  cover_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE campaign_metadata ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Anyone can read" ON campaign_metadata FOR SELECT USING (true);
+CREATE POLICY "Anyone can insert" ON campaign_metadata FOR INSERT WITH CHECK (true);
+CREATE POLICY "Anyone can update" ON campaign_metadata FOR UPDATE USING (true);
+```
+
+2. Go to **Storage** → **New bucket** → name it `campaign-covers` → toggle **Public** ON
+
+### 4. Run the dev server
 
 ```bash
 npm run dev
@@ -216,7 +254,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-### 4. Deploy your own contracts (optional)
+### 5. Deploy your own contracts (optional)
 
 If you want to deploy a fresh set of contracts to Mezo Testnet:
 
@@ -242,25 +280,35 @@ The deploy script writes contract addresses to `deployments/mezo-testnet.json`.
 
 ```
 kyndl/
-├── app/                     # Next.js app router pages
-│   ├── page.tsx             # Landing page
-│   ├── dashboard/           # Creator & Affiliate dashboard
-│   ├── buy/[campaignId]/    # Product checkout page
-│   └── layout.tsx           # Root layout with wallet providers
-├── components/              # React components
-│   ├── passport-button.tsx  # Wallet connect button
+├── app/                         # Next.js app router pages
+│   ├── page.tsx                 # Landing page
+│   ├── app/                     # Authenticated builder pages
+│   │   ├── create-campaign/     # Campaign creation form + deploy
+│   │   └── campaigns/           # Browse all on-chain campaigns
+│   ├── buy/[campaignId]/        # Product checkout page
+│   ├── dashboard/               # Legacy dashboard (Creator & Affiliate)
+│   └── layout.tsx               # Root layout with wallet providers
+├── hooks/                       # Custom React hooks
+│   ├── use-create-campaign.ts   # Deploy hook (Supabase + contract)
+│   ├── use-campaigns.ts         # Fetch all campaigns (chain + Supabase)
+│   ├── use-mobile.ts            # Mobile detection
+│   └── use-toast.ts             # Toast notifications
+├── components/                  # React components
+│   ├── passport-button.tsx      # Wallet connect button
 │   ├── settlement-showcase.tsx  # Settlement receipt examples
-│   ├── features.tsx         # Creator & Affiliate feature cards
-│   ├── hero.tsx             # Landing page hero section
-│   └── ui/                  # Radix UI component library
-├── contracts/               # Solidity smart contracts
-│   ├── KyndlRegistry.sol    # Campaign factory + reputation
-│   ├── KyndlCampaign.sol    # Per-product purchase + split logic
-│   └── interfaces/          # Contract interfaces
-├── lib/contracts/           # Frontend ABI definitions + addresses
-├── scripts/                 # Hardhat deployment scripts
-├── deployments/             # Deployed contract addresses
-└── docs/                    # Additional documentation
+│   ├── features.tsx             # Creator & Affiliate feature cards
+│   ├── hero.tsx                 # Landing page hero section
+│   └── ui/                      # Radix UI component library
+├── contracts/                   # Solidity smart contracts
+│   ├── KyndlRegistry.sol        # Campaign factory + reputation
+│   ├── KyndlCampaign.sol        # Per-product purchase + split logic
+│   └── interfaces/              # Contract interfaces
+├── lib/
+│   ├── contracts/               # Frontend ABI definitions + addresses
+│   └── supabase.ts              # Supabase client + image upload helper
+├── scripts/                     # Hardhat deployment scripts
+├── deployments/                 # Deployed contract addresses
+└── docs/                        # Additional documentation
 ```
 
 ---

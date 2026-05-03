@@ -49,6 +49,12 @@ The product flow is:
 6. The campaign transfers MUSD from buyer and splits it to creator and affiliate in the same transaction.
 7. The registry records creator and affiliate reputation stats.
 
+## Incoming Updates
+
+- Real Mezo Passport integration is not finished yet. The app currently gates access by wallet connection, while affiliate verification onchain is still managed by the registry owner through `setAffiliateVerified`.
+- The separate `ReputationTracker.sol` contract from the original blueprint has not been implemented. Reputation is currently tracked as raw counters inside `KyndlRegistry`, and the Bronze/Silver/Gold tier display in the dashboard is still mocked in the frontend.
+- MUSD auto-yield through Mezo Earn is not implemented yet. There is no `MusdYieldAdapter.sol` in the current contract set, and affiliate commissions are sent directly to the affiliate wallet during settlement.
+
 ## Contract Architecture
 
 ```text
@@ -603,6 +609,9 @@ Private key safety:
 ## Known Limitations
 
 - Affiliate verification is currently admin-controlled by the registry owner.
+- Real Mezo Passport verification has not replaced the current owner-managed verification flow yet.
+- Reputation tiers are not enforced onchain yet; the current registry only stores cumulative counters.
+- Mezo Earn auto-yield routing is not included in the deployed contracts yet.
 - The frontend currently displays newly created campaigns locally after deployment; a production version should index `CampaignCreated` events or read `getCampaigns()`.
 - The registry owner is a normal wallet, not a multisig.
 - Contract upgradeability is not included. This is intentional for hackathon simplicity and easier verification.

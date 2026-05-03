@@ -310,7 +310,14 @@ Kyndl is built to grow beyond the hackathon:
 - **Multi-tier affiliate chains** — Support second-level referrals (affiliate refers another affiliate)
 - **Product delivery integration** — Unlock digital content after MUSD payment is confirmed
 - **Analytics dashboard** — Deeper insights into conversion rates, top campaigns, and affiliate performance
-- **Mezo Passport integration** — Use Passport identity for affiliate verification and reputation portability
+- **Mezo Passport integration** — Replace the current wallet-only gate and owner-managed affiliate verification with real Passport-based verification and reputation portability
+- **Reputation tracker** — Move Bronze/Silver/Gold tier logic out of frontend mocks and into a dedicated onchain reputation system
+- **Mezo Earn integration** — Add auto-yield routing for affiliate commissions instead of direct wallet-only payouts
+- **Kyndl SDK** — Ship a one-line integration SDK so Mezo dApps can add affiliate tracking and payout flows quickly
+- **Agent-native affiliate API** — Add programmatic affiliate registration and campaign access for autonomous AI agents
+- **Cross-dApp affiliate links** — Let affiliates use one Kyndl link across multiple campaigns and partner dApps
+- **Ecosystem expansion and partnerships** — Grow integrations across the Mezo ecosystem and deepen distribution partnerships
+- **More chains** — Expand beyond Mezo to Bitcoin-aligned networks such as Stacks and Rootstock
 
 ---
 

@@ -1,8 +1,12 @@
 "use client"
 
-import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit"
+import {
+  RainbowKitProvider,
+  getDefaultConfig,
+} from "@rainbow-me/rainbowkit"
+import { injectedWallet, walletConnectWallet } from "@rainbow-me/rainbowkit/wallets"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { WagmiProvider } from "wagmi"
+import { WagmiProvider, createConfig, http, injected } from "wagmi"
 import "@rainbow-me/rainbowkit/styles.css"
 import { useState, type ReactNode } from "react"
 import { defineChain } from "viem"
@@ -46,17 +50,39 @@ export const mezoTestnet = defineChain({
 
 // Use RainbowKit's getDefaultConfig directly instead of @mezo-org/passport's
 // getConfig to avoid the broken orangekit dependency chain
-const wagmiConfig = getDefaultConfig({
-  appName: "Kyndl",
-  projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID || "kyndl-development-project-id",
-  chains: [mezoTestnet],
-})
+const walletConnectProjectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID?.trim()
+
+const walletList = [
+  {
+    groupName: "Wallets",
+    wallets: [injectedWallet, walletConnectWallet],
+  },
+] as const
+
+const wagmiConfig = walletConnectProjectId
+  ? getDefaultConfig({
+      appName: "Kyndl",
+      projectId: walletConnectProjectId,
+      chains: [mezoTestnet],
+      wallets: walletList,
+    })
+  : createConfig({
+      chains: [mezoTestnet],
+      connectors: [injected()],
+      multiInjectedProviderDiscovery: false,
+      transports: {
+        [mezoTestnet.id]: http(mezoTestnet.rpcUrls.default.http[0]),
+      },
+    })
 
 export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(() => new QueryClient())
 
   return (
-    <WagmiProvider config={wagmiConfig}>
+    <WagmiProvider
+      config={wagmiConfig}
+      reconnectOnMount={process.env.NODE_ENV === "production"}
+    >
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider initialChain={mezoTestnet}>
           {children}

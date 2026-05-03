@@ -1,0 +1,8 @@
+{
+  "network": "mezoTestnet",
+  "chainId": 31611,
+  "paymentToken": "0x118917a40FAF1CD7a13dB0Ef56C86De7973Ac503",
+  "registry": "0x331721D9Cf63c40A7d429c15A4018066584E8e38",
+  "deployer": "0x3795D8e2a0AA19FA332506a9d3b09519F01C7D4F",
+  "deployedAt": "2026-05-02T14:19:57.129Z"
+}

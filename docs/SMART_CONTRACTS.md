@@ -14,6 +14,7 @@ Network:
 Token:
 
 - MUSD testnet token: `0x118917a40FAF1CD7a13dB0Ef56C86De7973Ac503`
+- Source: Mezo official contracts reference, `MUSD token and bridge` section.
 
 Kyndl deployment:
 
@@ -36,10 +37,7 @@ There are two production contracts:
 - `KyndlRegistry.sol`
 - `KyndlCampaign.sol`
 
-There are also test mocks:
-
-- `MockMUSD.sol`
-- `ReentrantMUSD.sol`
+There are no mock token contracts in the implementation. The contracts are configured around Mezo's official testnet MUSD contract at `0x118917a40FAF1CD7a13dB0Ef56C86De7973Ac503`.
 
 The product flow is:
 
@@ -526,44 +524,60 @@ Current output:
 }
 ```
 
-## Tests
+## Mezo Testnet Validation
 
-Test file:
+Validation script:
 
 ```text
-test/KyndlCampaign.ts
+scripts/validate-mezo.ts
 ```
 
 Run:
 
 ```bash
-npm run contracts:test
+npm run contracts:validate:mezo
 ```
 
-Covered test cases:
+This script uses only Mezo testnet and the official Mezo MUSD contract. It does not deploy or use any mock token.
 
-- Split math.
-- No-ref purchase.
-- With-ref purchase.
-- Creator cannot be affiliate.
-- Buyer cannot be affiliate.
-- Unverified affiliate reverts.
-- Insufficient allowance reverts.
-- Insufficient balance reverts.
-- Reentrancy attempt is blocked.
+Required `.env` values:
 
-Expected result:
-
-```text
-7 passing
+```env
+MEZO_TESTNET_RPC_URL=https://rpc.test.mezo.org
+MEZO_TESTNET_PRIVATE_KEY=0xYourBuyerAndRegistryOwnerPrivateKey
+MEZO_TESTNET_MUSD_ADDRESS=0x118917a40FAF1CD7a13dB0Ef56C86De7973Ac503
+NEXT_PUBLIC_KYNDL_REGISTRY_ADDRESS=0x331721D9Cf63c40A7d429c15A4018066584E8e38
+MEZO_TEST_AFFILIATE_ADDRESS=0xSecondTestnetWalletAddress
+MEZO_TEST_PURCHASE_MUSD=0.01
 ```
+
+Important wallet setup:
+
+- `MEZO_TESTNET_PRIVATE_KEY` is the buyer/deployer wallet.
+- That wallet needs Mezo testnet gas.
+- That wallet also needs enough real Mezo testnet MUSD for two purchases.
+- `MEZO_TEST_AFFILIATE_ADDRESS` must be a different wallet address.
+- The affiliate wallet does not need a private key in `.env`; it only receives MUSD commission.
+
+Validation steps performed:
+
+- Confirms the connected chain is `31611`.
+- Confirms the registry uses official Mezo MUSD.
+- Confirms the buyer wallet has enough MUSD.
+- Creates a no-ref campaign through the deployed registry.
+- Buys the no-ref campaign with official MUSD.
+- Verifies a test affiliate through the registry owner.
+- Creates a referred campaign.
+- Buys through the affiliate address.
+- Confirms the affiliate received the expected MUSD commission.
+- Confirms affiliate reputation updated in the registry.
 
 ## Security Notes
 
 Reentrancy:
 
 - `purchase()` uses OpenZeppelin `ReentrancyGuard`.
-- Test coverage includes a malicious ERC20 that tries to reenter during `transferFrom`.
+- The code does not deploy a malicious token test contract because this project is intentionally tied to Mezo's official MUSD for hackathon validation.
 
 ERC20 transfers:
 

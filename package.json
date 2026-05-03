@@ -9,8 +9,8 @@
     "lint": "next lint",
     "start": "next start",
     "contracts:compile": "hardhat compile",
-    "contracts:test": "hardhat test",
-    "contracts:deploy:mezo": "hardhat run scripts/deploy-mezo.ts --network mezoTestnet"
+    "contracts:deploy:mezo": "hardhat run scripts/deploy-mezo.ts --network mezoTestnet",
+    "contracts:validate:mezo": "hardhat run scripts/validate-mezo.ts --network mezoTestnet"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

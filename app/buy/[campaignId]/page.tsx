@@ -1,6 +1,6 @@
 "use client"
 
-import { useAccount } from "wagmi"
+import { useAccount, usePublicClient, useReadContracts, useWriteContract } from "wagmi"
 import { useConnectModal } from "@rainbow-me/rainbowkit"
 import { useParams, useSearchParams } from "next/navigation"
 import { useEffect, useState, Suspense } from "react"
@@ -8,6 +8,9 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, ArrowRight, ShieldCheck, HeartHandshake } from "lucide-react"
+import { formatUnits, isAddress, parseUnits, zeroAddress, type Address, type Hash } from "viem"
+import { erc20Abi, kyndlCampaignAbi, MUSD_ADDRESS } from "@/lib/contracts/kyndl"
+import { useToast } from "@/hooks/use-toast"
 
 // Mock database for campaign lookup
 const MOCK_CAMPAIGN_DB: Record<string, { name: string; priceMusd: number; commissionPercent: number; description: string }> = {
@@ -42,15 +45,47 @@ function BuyPageContent() {
   const searchParams = useSearchParams()
   const { address, isConnected } = useAccount()
   const { openConnectModal } = useConnectModal()
+  const publicClient = usePublicClient()
+  const { writeContractAsync } = useWriteContract()
+  const { toast } = useToast()
   
   const campaignId = params.campaignId as string
   const urlRefParam = searchParams.get("ref")
+  const isChainCampaign = isAddress(campaignId)
+  const campaignAddress = isChainCampaign ? (campaignId as Address) : undefined
 
   const [affiliateAddress, setAffiliateAddress] = useState<string | null>(null)
   const [isPurchased, setIsPurchased] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [purchaseHash, setPurchaseHash] = useState<Hash | null>(null)
 
-  const campaign = MOCK_CAMPAIGN_DB[campaignId]
+  const { data: campaignReads, isLoading: isCampaignLoading } = useReadContracts({
+    contracts: campaignAddress
+      ? [
+          { address: campaignAddress, abi: kyndlCampaignAbi, functionName: "name" },
+          { address: campaignAddress, abi: kyndlCampaignAbi, functionName: "price" },
+          { address: campaignAddress, abi: kyndlCampaignAbi, functionName: "affiliateBps" },
+          { address: campaignAddress, abi: kyndlCampaignAbi, functionName: "metadataURI" },
+        ]
+      : [],
+    query: { enabled: Boolean(campaignAddress) },
+  })
+
+  const chainCampaign =
+    isChainCampaign && campaignReads?.every((result: { status: string }) => result.status === "success")
+      ? {
+          name: campaignReads[0].result as string,
+          priceMusd: Number(formatUnits(campaignReads[1].result as bigint, 18)),
+          priceRaw: campaignReads[1].result as bigint,
+          commissionPercent: Number(campaignReads[2].result as bigint | number) / 100,
+          description:
+            ((campaignReads[3].result as string) || "This campaign settles creator and affiliate payouts instantly on Mezo Testnet."),
+        }
+      : null
+
+  const mockCampaign = MOCK_CAMPAIGN_DB[campaignId]
+  const campaign = chainCampaign ?? mockCampaign
+  const priceRaw = chainCampaign?.priceRaw ?? (mockCampaign ? parseUnits(String(mockCampaign.priceMusd), 18) : BigInt(0))
 
   // Handle Affiliate Ref persistence
   useEffect(() => {
@@ -71,6 +106,14 @@ function BuyPageContent() {
     }
   }, [campaignId, urlRefParam])
 
+  if (isCampaignLoading) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-[#ff364d] border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
   if (!campaign) {
     return (
       <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center p-4">
@@ -90,19 +133,51 @@ function BuyPageContent() {
     }
 
     setIsProcessing(true)
-    
-    // Simulate contract interaction delay
-    await new Promise(resolve => setTimeout(resolve, 1500))
 
-    console.log("Mock Contract Call -> Executing Purchase:", {
-      campaignId,
-      buyer: address,
-      affiliate: affiliateAddress || "No Affiliate",
-      priceMusd: campaign.priceMusd
-    })
+    try {
+      if (campaignAddress && chainCampaign) {
+        if (!publicClient) throw new Error("Wallet client is not ready yet.")
+        if (affiliateAddress && !isAddress(affiliateAddress)) {
+          throw new Error("The referral address in the URL is not a valid wallet address.")
+        }
 
-    setIsProcessing(false)
-    setIsPurchased(true)
+        const affiliate = affiliateAddress && isAddress(affiliateAddress) ? (affiliateAddress as Address) : zeroAddress
+        const approvalHash = await writeContractAsync({
+          address: MUSD_ADDRESS,
+          abi: erc20Abi,
+          functionName: "approve",
+          args: [campaignAddress, priceRaw],
+        })
+        await publicClient.waitForTransactionReceipt({ hash: approvalHash })
+
+        const txHash = await writeContractAsync({
+          address: campaignAddress,
+          abi: kyndlCampaignAbi,
+          functionName: "purchase",
+          args: [affiliate],
+        })
+        await publicClient.waitForTransactionReceipt({ hash: txHash })
+        setPurchaseHash(txHash)
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        console.log("Mock Contract Call -> Executing Purchase:", {
+          campaignId,
+          buyer: address,
+          affiliate: affiliateAddress || "No Affiliate",
+          priceMusd: campaign.priceMusd
+        })
+      }
+
+      setIsPurchased(true)
+    } catch (error) {
+      toast({
+        title: "Purchase failed",
+        description: error instanceof Error ? error.message : "The transaction did not complete.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   if (isPurchased) {
@@ -116,6 +191,16 @@ function BuyPageContent() {
           <p className="text-white/60 mb-8">
             You successfully purchased <span className="text-white font-medium">{campaign.name}</span> for {campaign.priceMusd} MUSD.
           </p>
+          {purchaseHash && (
+            <a
+              href={`https://explorer.test.mezo.org/tx/${purchaseHash}`}
+              target="_blank"
+              rel="noreferrer"
+              className="mb-6 block truncate font-mono text-xs text-[#ff364d] hover:text-[#ff6b7b]"
+            >
+              {purchaseHash}
+            </a>
+          )}
           <Link href="/">
             <Button variant="primary" className="w-full shadow-lg shadow-[#ff364d]/20">Return Home</Button>
           </Link>

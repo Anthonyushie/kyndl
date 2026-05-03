@@ -48,7 +48,7 @@ export const mezoTestnet = defineChain({
 // getConfig to avoid the broken orangekit dependency chain
 const wagmiConfig = getDefaultConfig({
   appName: "Kyndl",
-  projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID!,
+  projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID || "kyndl-development-project-id",
   chains: [mezoTestnet],
 })
 
